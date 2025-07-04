@@ -1,4 +1,0 @@
-package com.tekup.taskmanager.services;
-
-public class IDocumentService {
-}
