@@ -1,4 +1,0 @@
-package com.tekup.taskmanager.exception;
-
-public class UserNotFoundException {
-}
