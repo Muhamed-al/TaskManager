@@ -1,9 +1,15 @@
 package com.tekup.taskmanager.controllers;
 
-
 import com.tekup.taskmanager.dto.TaskRequestDTO;
 import com.tekup.taskmanager.dto.TaskResponseDTO;
 import com.tekup.taskmanager.services.ITaskService;
+import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.Parameter;
+import io.swagger.v3.oas.annotations.media.Content;
+import io.swagger.v3.oas.annotations.media.Schema;
+import io.swagger.v3.oas.annotations.responses.ApiResponse;
+import io.swagger.v3.oas.annotations.responses.ApiResponses;
+import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.validation.Valid;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
@@ -14,6 +20,7 @@ import java.util.List;
 
 @RestController
 @RequestMapping("api/v0/tasks")
+@Tag(name = "Tasks", description = "Task management APIs")
 public class TaskController {
 
     private ITaskService taskService;
@@ -24,6 +31,14 @@ public class TaskController {
     }
 
     @PostMapping
+    @Operation(summary = "Create a new task", description = "Creates a new task with the provided information")
+    @ApiResponses(value = {
+            @ApiResponse(responseCode = "200", description = "Task created successfully",
+                    content = @Content(schema = @Schema(implementation = TaskResponseDTO.class))),
+            @ApiResponse(responseCode = "400", description = "Invalid input data"),
+            @ApiResponse(responseCode = "404", description = "Project not found"),
+            @ApiResponse(responseCode = "500", description = "Internal server error")
+    })
     public ResponseEntity<TaskResponseDTO> createTask(@Valid @RequestBody TaskRequestDTO dto) {
         return ResponseEntity.ok(taskService.createTask(dto));
     }
@@ -40,11 +55,25 @@ public class TaskController {
     }
 
     @GetMapping("/{id}")
-    public ResponseEntity<TaskResponseDTO> getTask(@PathVariable Long id) {
+    @Operation(summary = "Get task by ID", description = "Retrieves a specific task by its ID")
+    @ApiResponses(value = {
+            @ApiResponse(responseCode = "200", description = "Task found",
+                    content = @Content(schema = @Schema(implementation = TaskResponseDTO.class))),
+            @ApiResponse(responseCode = "404", description = "Task not found"),
+            @ApiResponse(responseCode = "500", description = "Internal server error")
+    })
+    public ResponseEntity<TaskResponseDTO> getTask(
+            @Parameter(description = "Task ID", required = true) @PathVariable Long id) {
         return ResponseEntity.ok(taskService.getTaskById(id));
     }
 
     @GetMapping
+    @Operation(summary = "Get all tasks", description = "Retrieves all tasks in the system")
+    @ApiResponses(value = {
+            @ApiResponse(responseCode = "200", description = "Tasks retrieved successfully",
+                    content = @Content(schema = @Schema(implementation = TaskResponseDTO.class))),
+            @ApiResponse(responseCode = "500", description = "Internal server error")
+    })
     public ResponseEntity<List<TaskResponseDTO>> getAllTasks() {
         return ResponseEntity.ok(taskService.getAllTasks());
     }

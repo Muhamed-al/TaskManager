@@ -58,29 +58,19 @@ public class GlobalExceptionHandler {
     }
 
     @ExceptionHandler(MethodArgumentNotValidException.class)
-    public ResponseEntity<Map<String, Object>> handleMethodArgumentNotValidException(MethodArgumentNotValidException ex) {
+    public ResponseEntity<Map<String, Object>> handleMethodArgumentNotValidException(MethodArgumentNotValidException ex){
         Map<String, Object> body = new HashMap<>();
-        body.put("timestamp", LocalDateTime.now());
-        body.put("status", HttpStatus.BAD_REQUEST.value());
-        
-        // Get the first validation error message
-        /*String errorMessage = ex.getBindingResult().getFieldErrors().stream()
-                .findFirst()
-                .map(error -> error.getDefaultMessage())
-                .orElse("Validation failed");
-        
-        body.put("message", errorMessage);*/
-        
-        // If you want all validation errors, you can add this:
-        List<String> allErrors = ex.getBindingResult().getFieldErrors().stream()
-             .map(error -> error.getField() + ": " + error.getDefaultMessage())
-             .collect(Collectors.toList());
-         body.put("errors", allErrors);
-        System.out.println("********************************************************");
-        System.out.println(ex.getBindingResult().getFieldErrors());
-        System.out.println("********************************************************");
 
-        return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(body);
+        List<String> allErrorMsg = ex.getBindingResult().getFieldErrors().stream()
+                .map(error -> error.getDefaultMessage())
+                .collect(Collectors.toList());
+
+        body.put("message" , allErrorMsg);
+        body.put("code" , 400);
+        return
+                ResponseEntity
+                        .status(HttpStatus.BAD_REQUEST)
+                        .body(body);
     }
 
     @ExceptionHandler(Exception.class)

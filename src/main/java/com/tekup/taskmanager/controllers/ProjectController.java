@@ -1,9 +1,15 @@
 package com.tekup.taskmanager.controllers;
 
-
 import com.tekup.taskmanager.entities.Project;
 import com.tekup.taskmanager.exception.UserNotFoundException;
 import com.tekup.taskmanager.services.IProjectService;
+import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.Parameter;
+import io.swagger.v3.oas.annotations.media.Content;
+import io.swagger.v3.oas.annotations.media.Schema;
+import io.swagger.v3.oas.annotations.responses.ApiResponse;
+import io.swagger.v3.oas.annotations.responses.ApiResponses;
+import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.validation.Valid;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -12,6 +18,7 @@ import java.util.List;
 
 @RestController
 @RequestMapping("/api/v0/projects")
+@Tag(name = "Projects", description = "Project management APIs")
 public class ProjectController {
 
 
@@ -23,6 +30,13 @@ public class ProjectController {
     }
 
     @PostMapping
+    @Operation(summary = "Create a new project", description = "Creates a new project with the provided information")
+    @ApiResponses(value = {
+            @ApiResponse(responseCode = "200", description = "Project created successfully",
+                    content = @Content(schema = @Schema(implementation = Project.class))),
+            @ApiResponse(responseCode = "400", description = "Invalid input data"),
+            @ApiResponse(responseCode = "500", description = "Internal server error")
+    })
     public ResponseEntity<Project> createProject(@Valid @RequestBody Project project) {
         return ResponseEntity.ok(projectService.createProject(project));
     }
@@ -39,6 +53,12 @@ public class ProjectController {
     }
 
     @GetMapping
+    @Operation(summary = "Get all projects", description = "Retrieves all projects in the system")
+    @ApiResponses(value = {
+            @ApiResponse(responseCode = "200", description = "Projects retrieved successfully",
+                    content = @Content(schema = @Schema(implementation = Project.class))),
+            @ApiResponse(responseCode = "500", description = "Internal server error")
+    })
     public ResponseEntity<List<Project>> getAllProjects() {
         return ResponseEntity.ok(projectService.getAllProjects());
     }

@@ -30,6 +30,7 @@ public class SecurityConfig {
                         .requestMatchers("/api/test/admin/**").hasRole("ADMIN")
                         .requestMatchers("/api/test/user/**").hasRole("USER")
                         .requestMatchers("/api/v0/**").authenticated()
+                        .requestMatchers("/swagger-ui/**", "/swagger-ui.html", "/api-docs/**", "/v3/api-docs/**").permitAll()
                         .anyRequest().authenticated()
                 )
                 .sessionManagement(session -> session
